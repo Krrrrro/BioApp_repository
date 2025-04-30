@@ -1,0 +1,118 @@
+{
+    "header": {
+        "version": 0,
+        "type": 1210
+    },
+    "body": {
+        "robot_id": 1,
+        "command_id": "1178908b-88d2-42ba-a78c-14e6d03ebbd3",
+        "order_mode": 1,
+        "way_points": [
+            {
+                "mode": 1,
+                "goal_x": 0.7,
+                "goal_y": 0,
+                "goal_yaw": 0,
+                "plants": [
+                    {
+                        "plant_id": "CB11101",
+                        "armendpoint_x": 0.8396424004376895,
+                        "armendpoint_y": 0.5581322675510436,
+                        "armendpoint_z": 0.87,
+                        "cam_pitch": 0.0714894498855206,
+                        "cam_yaw": 0.5235987755982993,
+                        "sensor": 2
+                    },
+                    {
+                        "plant_id": "CB11101",
+                        "armendpoint_x": 0.7955210276240778,
+                        "armendpoint_y": 0.5375581335197448,
+                        "armendpoint_z": 0.87,
+                        "cam_pitch": 0.07148944988552061,
+                        "cam_yaw": 0.34906585039886584,
+                        "sensor": 2
+                    },
+                    {
+                        "plant_id": "CB11101",
+                        "armendpoint_x": 0.748497296722081,
+                        "armendpoint_y": 0.5249581627994563,
+                        "armendpoint_z": 0.87,
+                        "cam_pitch": 0.0714894498855206,
+                        "cam_yaw": 0.17453292519943292,
+                        "sensor": 2
+                    }
+                ]
+            },
+            {
+                "mode": 1,
+                "goal_x": 0.49999999999999994,
+                "goal_y": 0,
+                "goal_yaw": 0,
+                "plants": [
+                    {
+                        "plant_id": "CB11102",
+                        "armendpoint_x": 0.6396424004376895,
+                        "armendpoint_y": 0.5581322675510436,
+                        "armendpoint_z": 0.87,
+                        "cam_pitch": 0.0714894498855206,
+                        "cam_yaw": 0.5235987755982993,
+                        "sensor": 2
+                    },
+                    {
+                        "plant_id": "CB11102",
+                        "armendpoint_x": 0.5955210276240779,
+                        "armendpoint_y": 0.5375581335197448,
+                        "armendpoint_z": 0.87,
+                        "cam_pitch": 0.07148944988552061,
+                        "cam_yaw": 0.34906585039886584,
+                        "sensor": 2
+                    },
+                    {
+                        "plant_id": "CB11102",
+                        "armendpoint_x": 0.5484972967220809,
+                        "armendpoint_y": 0.5249581627994563,
+                        "armendpoint_z": 0.87,
+                        "cam_pitch": 0.0714894498855206,
+                        "cam_yaw": 0.17453292519943292,
+                        "sensor": 2
+                    }
+                ]
+            },
+            {
+                "mode": 1,
+                "goal_x": 0.29999999999999993,
+                "goal_y": 0,
+                "goal_yaw": 0,
+                "plants": [
+                    {
+                        "plant_id": "CB11103",
+                        "armendpoint_x": 0.43964240043768943,
+                        "armendpoint_y": 0.5581322675510436,
+                        "armendpoint_z": 0.87,
+                        "cam_pitch": 0.0714894498855206,
+                        "cam_yaw": 0.5235987755982993,
+                        "sensor": 2
+                    },
+                    {
+                        "plant_id": "CB11103",
+                        "armendpoint_x": 0.3955210276240778,
+                        "armendpoint_y": 0.5375581335197448,
+                        "armendpoint_z": 0.87,
+                        "cam_pitch": 0.07148944988552061,
+                        "cam_yaw": 0.34906585039886584,
+                        "sensor": 2
+                    },
+                    {
+                        "plant_id": "CB11103",
+                        "armendpoint_x": 0.34849729672208096,
+                        "armendpoint_y": 0.5249581627994563,
+                        "armendpoint_z": 0.87,
+                        "cam_pitch": 0.0714894498855206,
+                        "cam_yaw": 0.17453292519943292,
+                        "sensor": 2
+                    }
+                ]
+            }
+        ]
+    }
+}

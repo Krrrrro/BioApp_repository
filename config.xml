@@ -1,0 +1,8 @@
+<config>
+    <broker>192.168.25.38</broker>
+    <port>1883</port>
+    <topics>
+        <topic>al.report</topic>
+        <topic>al.command</topic>
+    </topics>
+</config>
