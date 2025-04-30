@@ -8,7 +8,6 @@ CONFIG_FILE = "config.xml"
 
 def read_config():
     try:
-        print("ggqsqsg")
         tree = ET.parse(CONFIG_FILE)
         root = tree.getroot()
         broker = root.find("broker").text

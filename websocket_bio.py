@@ -10,10 +10,13 @@ from websocket_manager import manager
 from collections import defaultdict
 from shared_state import message_buffer
 from flask import Flask, send_from_directory
+from tkinter import messagebox
+import xml.etree.ElementTree as ET
 import socket
-
+CONFIG_FILE = "config.xml"
 DATA_DIR = "data"
 HTTP_DATA_DIR = "result"
+ftp = ""
 # Flask 앱 생성
 app = Flask(__name__)
 
@@ -60,18 +63,21 @@ def on_message(ws, message):
             command = message["body"]["command_id"]
             if re.search(r'-\d+$', command) and message["body"]["state"] == 1:
                 threading.Thread(target=mod.run, daemon=True).start()
-        elif type == 1301:
+        else :
             body = message["body"]
-            target_id = body["target"]["target_id"]
-            message_buffer[target_id]["sensor"].append(body)
-            print(message_buffer[target_id]["sensor"])
-        elif type == 1302:
-            path = message["body"]["path"]
-            if path.endswith(".ply"):
-                print('🟢 FTP 다운로드 시작')
-                ftp_path = "/".join(path.split("/")[:-1])
-                filename = path.split("/")[-1]
-                download_ftp_file(ftp_path, filename)
+            sensor = body["target"]["sensor"]
+            if sensor == 2 :
+                if type == 1301:            
+                    target_id = body["target"]["target_id"]
+                    message_buffer[target_id]["sensor"].append(body)
+                    message_buffer[target_id]["robot_id"] = body["target"]["robot_id"]
+                elif type == 1302:
+                    path = body["path"]
+                    if path.endswith(".ply"):
+                        print('🟢 FTP 다운로드 시작')
+                        ftp_path = "/".join(path.split("/")[:-1])
+                        filename = path.split("/")[-1]
+                        download_ftp_file(ftp_path, filename)
         
     except Exception as e:
         print("메시지 처리 중 에러:", e)
@@ -117,7 +123,7 @@ def get_local_ip():
     finally:
         s.close()
     return ip
-def set_data_format(success, path, weight, area, sensors, targetid) -> bytes:
+def set_data_format(success, filename, weight, area, sensors, targetid, robot_id) -> bytes:
     # current_path = os.getcwd()
     # current_folder_name = os.path.basename(current_path)
     # path = os.path.join(current_folder_name, path).replace("\\", "/")
@@ -131,11 +137,12 @@ def set_data_format(success, path, weight, area, sensors, targetid) -> bytes:
         "body": {{
             "robot_id": 1,
             "success" : {success},
-            "path" : "http://{ip}:8000/{path}",
+            "path" : "http://{ip}:8000/{filename}",
             "weight": {weight},
             "sensors" : {json.dumps(sensors)},
             "area" : {area},
-            "targetid" : "{targetid}"
+            "targetid" : "{targetid}",
+            "robot_id" : {robot_id}
             
         }}
     }}'''
@@ -161,8 +168,9 @@ def send_message(success, path, weight, area):
     print(message_buffer)
     max_target_id = max(message_buffer.items(), key=lambda item: len(item[1]["sensor"]))[0]
     most_sensor_data = message_buffer[max_target_id]["sensor"]
+    robot_id = message_buffer[max_target_id]["target_id"]
     datas = average_sensor_data(most_sensor_data)
-    msg = set_data_format(success, path, weight, area, datas, max_target_id)
+    msg = set_data_format(success, path, weight, area, datas, max_target_id, robot_id)
     del message_buffer[max_target_id]
     manager.send(msg)
 
@@ -174,10 +182,28 @@ def wait_until_connected(timeout=5.0):
         time.sleep(0.1)
     return False
 
-if __name__ == "__main__":
+def read_config():
+    try:
+        global ftp
+        tree = ET.parse(CONFIG_FILE)
+        root = tree.getroot()
+        ftp = root.find("FTP").text
+        return True
+    except FileNotFoundError:
+        print("Error", f"Failed to parse config: {e}")
+        return False
+    except Exception as e:
+        print("Error", f"Failed to parse config: {e}")
+        return False
+
+def main() :
     print("🚀 WebSocket 시작")
 
     threading.Thread(target=run_websocket, daemon=True).start()
     threading.Thread(target=run_http_server, daemon=True).start()
     while True:
         time.sleep(1)
+
+if __name__ == "__main__":
+    if(read_config()):
+        main()
