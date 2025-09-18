@@ -18,6 +18,7 @@ DATA_DIR = "data"
 HTTP_DATA_DIR = "result"
 ftp = ""
 # Flask 앱 생성
+broker = ""
 app = Flask(__name__)
 
 
@@ -49,29 +50,31 @@ def separate_header_message(data: bytes):
     try:
         header = data[:20]
         message_bytes = data[20:]
-        message = json.loads(message_bytes.decode('utf-8'))
-        return header, message
+        message = json.loads(message_bytes.decode('utf-8').strip())
+        return header.decode("utf-8").rstrip("\x00"), message
     except Exception as e:
-        print("JSON 디코딩 에러:", e)
+        print("JSON 디코딩 에러:", e, data)
         return None, None
 
 def on_message(ws, message):
+
     header, message = separate_header_message(message)
-    type = message["header"]["type"]
+    # type = message["header"]["type"]
     try:
-        if type == 1202:
+        if header == "1202":
             command = message["body"]["command_id"]
-            if re.search(r'-\d+$', command) and message["body"]["state"] == 1:
+            print("왔다", re.search(r'-\d+$', command))
+            if re.search(r'-\d+$', command) == None and message["body"]["state"] == 1:
                 threading.Thread(target=mod.run, daemon=True).start()
-        else :
+        elif (header == "1301" or header == "1302"):
             body = message["body"]
             sensor = body["target"]["sensor"]
             if sensor == 2 :
-                if type == 1301:            
+                if header == "1301":            
                     target_id = body["target"]["target_id"]
                     message_buffer[target_id]["sensor"].append(body)
-                    message_buffer[target_id]["robot_id"] = body["target"]["robot_id"]
-                elif type == 1302:
+                    message_buffer[target_id]["robot_id"] = body["robot_id"]
+                elif header == "1302":
                     path = body["path"]
                     if path.endswith(".ply"):
                         print('🟢 FTP 다운로드 시작')
@@ -94,10 +97,10 @@ def on_open(ws):
     # threading.Thread(target=mod.run, daemon=True).start()
 
 def run_websocket():
-    ws_url = "ws://localhost:6000/Server"
+    ws_url = f"ws://{broker}:6000/Server"
 
     while True:
-        print("🔄 WebSocket 연결 시도 중...")
+        print(f"🔄 WebSocket {ws_url}로 연결 시도 중...")
         try:
             ws_app = websocket.WebSocketApp(
                 ws_url,
@@ -143,7 +146,6 @@ def set_data_format(success, filename, weight, area, sensors, targetid, robot_id
             "area" : {area},
             "targetid" : "{targetid}",
             "robot_id" : {robot_id}
-            
         }}
     }}'''
     header = bytearray(20)
@@ -168,7 +170,7 @@ def send_message(success, path, weight, area):
     print(message_buffer)
     max_target_id = max(message_buffer.items(), key=lambda item: len(item[1]["sensor"]))[0]
     most_sensor_data = message_buffer[max_target_id]["sensor"]
-    robot_id = message_buffer[max_target_id]["target_id"]
+    robot_id = message_buffer[max_target_id]["robot_id"]
     datas = average_sensor_data(most_sensor_data)
     msg = set_data_format(success, path, weight, area, datas, max_target_id, robot_id)
     del message_buffer[max_target_id]
@@ -185,9 +187,12 @@ def wait_until_connected(timeout=5.0):
 def read_config():
     try:
         global ftp
+        global broker
         tree = ET.parse(CONFIG_FILE)
         root = tree.getroot()
         ftp = root.find("FTP").text
+        broker = root.find("broker").text
+        
         return True
     except FileNotFoundError:
         print("Error", f"Failed to parse config: {e}")

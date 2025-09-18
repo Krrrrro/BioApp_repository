@@ -152,7 +152,7 @@ def main():
     # 9. 외곽선 및 시각화
     lines = o3d.geometry.LineSet.create_from_triangle_mesh(convex_hull)
     lines.paint_uniform_color([1, 0, 0])
-    # o3d.visualization.draw_geometries([combined_pcd, lines], window_name="Plant with Convex Hull Outline")
+    o3d.visualization.draw_geometries([combined_pcd, lines], window_name="Plant with Convex Hull Outline")
 
     # 10. Convex Hull 저장
     o3d.io.write_triangle_mesh("convex_hull.ply", convex_hull)

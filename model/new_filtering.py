@@ -139,11 +139,8 @@ def run():
 
             clear_data_folder(directory)
             path, combined_pcd, area = reg.main()
-            print(1111)
             area = area * 1000000
-            print(2222)
             weight = area / 8.5
-            print(3333)
             success = 1
             if wait_until_connected(timeout=10):
                 send_message(success, path, weight, area)
